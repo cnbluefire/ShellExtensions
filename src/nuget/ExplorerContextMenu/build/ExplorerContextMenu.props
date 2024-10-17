@@ -1,0 +1,15 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<ExplorerContextMenuEnabled>True</ExplorerContextMenuEnabled>
+        <ExplorerContextMenuOutputFileName>ExplorerContextMenu.dll</ExplorerContextMenuOutputFileName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="ExplorerContextMenu.json" />
+		<None Include="ExplorerContextMenu.json" CopyToOutputDirectory="Never" />
+		<ExplorerContextMenuResource Include="ExplorerContextMenu.json" Condition="Exists('ExplorerContextMenu.json')" />
+		<AdditionalFiles Include="ExplorerContextMenu.json" Condition="Exists('ExplorerContextMenu.json')" />
+	</ItemGroup>
+
+</Project>

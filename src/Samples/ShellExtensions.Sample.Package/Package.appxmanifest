@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
+  xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
+  xmlns:desktop5="http://schemas.microsoft.com/appx/manifest/desktop/windows10/5"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap2 uap3 desktop2 desktop4 desktop5 com rescap">
+
+	<Identity
+	  Name="9a3e838f-38fe-42f6-a342-8feb9ad191af"
+	  Publisher="CN=blue-fire"
+	  Version="1.0.0.0" />
+
+	<Properties>
+		<DisplayName>ShellExtensions.Sample.Package</DisplayName>
+		<PublisherDisplayName>blue-fire</PublisherDisplayName>
+		<Logo>Images\StoreLogo.png</Logo>
+	</Properties>
+
+	<Dependencies>
+		<TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+		<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14393.0" MaxVersionTested="10.0.14393.0" />
+	</Dependencies>
+
+	<Resources>
+		<Resource Language="x-generate"/>
+	</Resources>
+
+	<Applications>
+		<Application Id="App"
+		  Executable="$targetnametoken$.exe"
+		  EntryPoint="$targetentrypoint$">
+			<uap:VisualElements
+			  DisplayName="ShellExtensions.Sample.Package"
+			  Description="ShellExtensions.Sample.Package"
+			  BackgroundColor="transparent"
+			  Square150x150Logo="Images\Square150x150Logo.png"
+			  Square44x44Logo="Images\Square44x44Logo.png">
+				<uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+				<uap:SplashScreen Image="Images\SplashScreen.png" />
+			</uap:VisualElements>
+			<Extensions>
+				<com:Extension Category="windows.comServer">
+					<com:ComServer>
+						<com:ExeServer Executable="PreviewApp\PreviewApp.exe">
+							<com:Class Id="A3949267-36A0-4EB5-81B5-E468E566A59C" />
+						</com:ExeServer>
+					</com:ComServer>
+				</com:Extension>
+				<com:Extension Category="windows.comServer">
+					<com:ComServer>
+						<com:SurrogateServer AppId="A7234747-7C8E-4FF6-B284-9E6A014957B7">
+							<com:Class Id="A7234747-7C8E-4FF6-B284-9E6A014957B7" Path="ShellExt.dll" ThreadingModel="STA" />
+						</com:SurrogateServer>
+						<com:SurrogateServer AppId="0A639F6F-58EB-4427-BC59-8F69787C085C">
+							<com:Class Id="0A639F6F-58EB-4427-BC59-8F69787C085C" Path="ShellExt.dll" ThreadingModel="STA" />
+						</com:SurrogateServer>
+						<com:SurrogateServer AppId="8BC30CD2-B515-4E55-851C-31ACCD0ECFAF">
+							<com:Class Id="8BC30CD2-B515-4E55-851C-31ACCD0ECFAF" Path="ExplorerContextMenu.dll" ThreadingModel="STA" />
+						</com:SurrogateServer>
+					</com:ComServer>
+				</com:Extension>
+				<uap3:Extension Category="windows.fileTypeAssociation">
+					<uap3:FileTypeAssociation Name="xyz">
+						<uap:SupportedFileTypes>
+							<uap:FileType>.xyz</uap:FileType>
+						</uap:SupportedFileTypes>
+						<desktop2:ThumbnailHandler Clsid="0A639F6F-58EB-4427-BC59-8F69787C085C"/>
+						<desktop2:DesktopPreviewHandler Clsid="A3949267-36A0-4EB5-81B5-E468E566A59C"/>
+					</uap3:FileTypeAssociation>
+				</uap3:Extension>
+				<desktop4:Extension Category="windows.fileExplorerContextMenus">
+					<desktop4:FileExplorerContextMenus>
+						<desktop4:ItemType Type=".xyz">
+							<desktop4:Verb Id="ShellExt" Clsid="A7234747-7C8E-4FF6-B284-9E6A014957B7"/>
+						</desktop4:ItemType>
+						<desktop5:ItemType Type="Directory">
+							<desktop5:Verb Id="ExplorerContextMenu" Clsid="8BC30CD2-B515-4E55-851C-31ACCD0ECFAF"/>
+						</desktop5:ItemType>
+					</desktop4:FileExplorerContextMenus>
+				</desktop4:Extension>
+			</Extensions>
+		</Application>
+	</Applications>
+
+	<Capabilities>
+		<Capability Name="internetClient" />
+		<rescap:Capability Name="runFullTrust" />
+	</Capabilities>
+</Package>

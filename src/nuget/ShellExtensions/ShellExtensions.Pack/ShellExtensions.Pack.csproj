@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows7.0</TargetFramework>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <SuppressDependenciesWhenPacking>false</SuppressDependenciesWhenPacking>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>ShellExtensions</PackageId>
+        <Title>ShellExtensions</Title>
+        <Description>hello world</Description>
+        <RepositoryUrl>https://www.github.com/cnbluefire/ShellExtensions</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+		<None Include="..\..\..\..\docs\ShellExtensions.md" Pack="true" PackagePath="\README.md" />
+		<Content Include="..\lib\**\*" Pack="true" PackagePath="lib\" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,248 @@
+{
+    "$id": "https://github.com/cnbluefire/ShellExtensions",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "ExplorerContextMenuItemCheckOptions": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "isCheckable": {
+                    "type": "boolean"
+                },
+                "checkType": {
+                    "type": "string",
+                    "enum": [
+                        "Check",
+                        "RadioCheck"
+                    ]
+                },
+                "groupName": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "defaultChecked": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ExplorerContextMenuItemExecuteOptions": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "command": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "multipleItemsOperation": {
+                    "type": "string",
+                    "enum": [
+                        "OneByOne",
+                        "SpaceSeparatedItemsWithPrefix",
+                        "AllItemsWithDelimiter"
+                    ]
+                },
+                "itemPathDelimiter": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "itemPathArgumentPrefix": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "ExplorerContextMenuItemFlags": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "isSeparator": {
+                    "type": "boolean"
+                },
+                "hasLuaShield": {
+                    "type": "boolean"
+                },
+                "separatorBefore": {
+                    "type": "boolean"
+                },
+                "separatorAfter": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ExplorerContextMenuItemIconModel": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "iconFile": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "embeddedIconFile": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "embeddedPngFiles": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "additionalProperties": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            }
+        },
+        "ExplorerContextMenuItemModel": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "guid": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "toolTip": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "additionalProperties": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "title": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "additionalProperties": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "checkOptions": {
+                    "$ref": "#/definitions/ExplorerContextMenuItemCheckOptions"
+                },
+                "flags": {
+                    "$ref": "#/definitions/ExplorerContextMenuItemFlags"
+                },
+                "icon": {
+                    "$ref": "#/definitions/ExplorerContextMenuItemIconModel"
+                },
+                "darkIcon": {
+                    "$ref": "#/definitions/ExplorerContextMenuItemIconModel"
+                },
+                "subMenuItems": {
+                    "type": [
+                        "array",
+                        "null"
+                    ],
+                    "items": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "executeOptions": {
+                    "$ref": "#/definitions/ExplorerContextMenuItemExecuteOptions"
+                },
+                "visibilityOptions": {
+                    "$ref": "#/definitions/ExplorerContextMenuItemVisibilityOptions"
+                }
+            },
+            "required": [
+                "guid",
+                "title"
+            ]
+        },
+        "ExplorerContextMenuItemVisibilityOptions": {
+            "type": [
+                "object",
+                "null"
+            ],
+            "properties": {
+                "show": {
+                    "type": "boolean",
+                    "default": "true"
+                },
+                "showInModernContextMenu": {
+                    "type": "boolean",
+                    "default": "true"
+                },
+                "showInClassicContextMenu": {
+                    "type": "boolean",
+                    "default": "true"
+                },
+                "showWithFile": {
+                    "type": "boolean",
+                    "default": "true"
+                },
+                "showWithFolder": {
+                    "type": "boolean",
+                    "default": "true"
+                },
+                "showWithMultipleItems": {
+                    "type": "boolean",
+                    "default": "true"
+                },
+                "registryOverrideSupport": {
+                    "type": "boolean",
+                    "default": "false"
+                }
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "configRegistryKey": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "menuItems": {
+            "type": [
+                "array",
+                "null"
+            ],
+            "items": {
+                "$ref": "#/definitions/ExplorerContextMenuItemModel"
+            }
+        }
+    },
+    "required": [
+        "menuItems"
+    ]
+}

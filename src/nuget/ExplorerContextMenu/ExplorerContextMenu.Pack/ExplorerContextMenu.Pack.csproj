@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>ExplorerContextMenu</PackageId>
+        <Title>ExplorerContextMenu</Title>
+        <Description>hello world</Description>
+        <RepositoryUrl>https://www.github.com/cnbluefire/ShellExtensions</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+    <ItemGroup>
+		<None Include="..\..\..\..\docs\ExplorerContextMenu.md" Pack="true" PackagePath="\README.md" />
+        <Content Include="..\build\**\*" Pack="true" PackagePath="build\" />
+        <Content Include="..\tools\**\*" Pack="true" PackagePath="tools\" />
+    </ItemGroup>
+</Project>
