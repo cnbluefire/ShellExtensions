@@ -18,7 +18,7 @@ dotnet add package ExplorerContextMenu
 
 Json 文件示例
 
-```json
+```jsonc
 {
   "$schema": "https://raw.githubusercontent.com/cnbluefire/ShellExtensions/refs/heads/main/src/ExplorerContextMenu/ExplorerContextMenu.Schema.json",
   
