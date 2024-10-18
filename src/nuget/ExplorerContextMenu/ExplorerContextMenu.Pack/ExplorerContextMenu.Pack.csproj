@@ -8,7 +8,7 @@
     <PropertyGroup>
         <PackageId>ExplorerContextMenu</PackageId>
         <Title>ExplorerContextMenu</Title>
-        <Description>hello world</Description>
+        <Description>Use JSON to create the context menu of the explorer.</Description>
         <RepositoryUrl>https://www.github.com/cnbluefire/ShellExtensions</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>

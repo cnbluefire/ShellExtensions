@@ -8,7 +8,7 @@
     <PropertyGroup>
         <PackageId>ShellExtensions</PackageId>
         <Title>ShellExtensions</Title>
-        <Description>hello world</Description>
+        <Description>Provide IExplorerCommand / IThumbnailProvider / IPreviewHandler .NET package.</Description>
         <RepositoryUrl>https://www.github.com/cnbluefire/ShellExtensions</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
