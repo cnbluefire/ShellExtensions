@@ -5,11 +5,11 @@
         <ExplorerContextMenuOutputFileName>ExplorerContextMenu.dll</ExplorerContextMenuOutputFileName>
 	</PropertyGroup>
 
-	<ItemGroup>
+	<ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\ExplorerContextMenu.json')">
 		<None Remove="ExplorerContextMenu.json" />
 		<None Include="ExplorerContextMenu.json" CopyToOutputDirectory="Never" />
-		<ExplorerContextMenuResource Include="ExplorerContextMenu.json" Condition="Exists('ExplorerContextMenu.json')" />
-		<AdditionalFiles Include="ExplorerContextMenu.json" Condition="Exists('ExplorerContextMenu.json')" />
+		<ExplorerContextMenuResource Include="ExplorerContextMenu.json" />
+		<AdditionalFiles Include="ExplorerContextMenu.json" />
 	</ItemGroup>
 
 </Project>

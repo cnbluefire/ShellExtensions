@@ -1,0 +1,1 @@
+https://github.com/cnbluefire/ShellExtensions/blob/main/docs/ExplorerContextMenu.md

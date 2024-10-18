@@ -157,12 +157,12 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
                 return ExplorerCommandState.ECS_HIDDEN;
             }
 
-            if (!visibilityOptions.ShowWithFile && !hasFile)
+            if (!visibilityOptions.ShowWithFile && hasFile)
             {
                 return ExplorerCommandState.ECS_HIDDEN;
             }
 
-            if (!visibilityOptions.ShowWithFolder && !hasFolder)
+            if (!visibilityOptions.ShowWithFolder && hasFolder)
             {
                 return ExplorerCommandState.ECS_HIDDEN;
             }
