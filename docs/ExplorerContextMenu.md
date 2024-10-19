@@ -41,8 +41,9 @@ Json 文件示例
   // currentDirectory :
   // currentDir     : 当前所在文件夹，包含尾随的'\'
 
-  // items          : 选中的文件，仅在 MultipleFilesOperation 为 Join 时可用，使用 PathDelimiter 分隔
-  // item           : 选中的文件，MultipleFilesOperation 为 OneByOne 时返回正在处理的文件，Join 时返回选中文件中的第一个
+  // items          : 选中的文件或文件夹路径，仅在 MultipleFilesOperation 为 Join 时可用，使用 PathDelimiter 分隔
+  // item           : 选中的文件或文件夹路径，MultipleFilesOperation 为 OneByOne 时返回正在处理的文件，Join 时返回选中文件中的第一个
+  // itemName       : 选中的文件或文件夹名
 
   // 本地化字符串字典的 key 不处理大小写
 

@@ -203,7 +203,6 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
             var context = new ParameterContext(
                 model,
                 shellItems,
-                0,
                 () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder);
             if (context.TryFormat(title, out var result))
             {
@@ -222,7 +221,6 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
             var context = new ParameterContext(
                 model,
                 shellItems,
-                0,
                 () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder);
             if (context.TryFormat(toolTip, out var result))
             {
@@ -247,7 +245,6 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
             var context = new ParameterContext(
                 model,
                 shellItems,
-                0,
                 () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder);
             if (context.TryFormat(icon, out var result))
             {
@@ -284,22 +281,41 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
 
         if (!string.IsNullOrEmpty(command))
         {
-            var context = new ParameterContext(model, args.ShellItems, 0, () => args.Folder);
-            if (context.TryFormat(command, out var result))
+            var context = new ParameterContext(model, args.ShellItems, () => args.Folder);
+            if (model.ExecuteOptions!.MultipleItemsOperation == ExplorerContextMenuItemMultipleItemsOperation.OneByOne)
             {
-                var psi = CommandHelper.CreateProcessStartInfo(result);
-
-                if (psi != null)
+                for (var i = 0; i < context.ShellItemsCount; i++)
                 {
-                    if (model.Flags != null && model.Flags.HasLuaShield)
+                    context.Index = i;
+                    if (context.TryFormat(command, out var result))
                     {
-                        psi.Verb = "runas";
+                        StartProcess(result, model.Flags?.HasLuaShield ?? false);
                     }
-
-                    try
-                    { Process.Start(psi); }
-                    catch { }
                 }
+            }
+            else
+            {
+                if (context.TryFormat(command, out var result))
+                {
+                    StartProcess(result, model.Flags?.HasLuaShield ?? false);
+                }
+            }
+        }
+
+        static void StartProcess(string _command, bool _hasLuaShield)
+        {
+            var psi = CommandHelper.CreateProcessStartInfo(_command);
+
+            if (psi != null)
+            {
+                if (_hasLuaShield)
+                {
+                    psi.Verb = "runas";
+                }
+
+                try
+                { Process.Start(psi); }
+                catch { }
             }
         }
     }

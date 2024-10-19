@@ -16,6 +16,7 @@
                 }
             },
             "subMenuItems": [
+                "46E64A86-D854-40E4-B258-55255FB6B7BC",
                 "57CB061C-FDF5-4727-91F1-A0F0B449A806",
                 "151CBE4A-6155-4FB0-97F6-406BCA38C1F8",
                 "EF137A4E-026F-4DBD-A018-1DF5DE4BC765"
@@ -83,6 +84,12 @@
             },
             "visibilityOptions": {
               "registryOverrideSupport": true
+            }
+        },
+        {
+            "guid": "46E64A86-D854-40E4-B258-55255FB6B7BC",
+            "title": {
+                "en": "{itemName}"
             }
         }
     ]
