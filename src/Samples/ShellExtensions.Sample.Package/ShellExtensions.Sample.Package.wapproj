@@ -87,12 +87,12 @@
 		<PropertyGroup>
 			<_ShellExtDllWorkDir>..\ShellExtDll\</_ShellExtDllWorkDir>
 			<_CommandExitCode>0</_CommandExitCode>
-			<_ShellExtDllPlatform>$(Platform)</_ShellExtDllPlatform>
+			<_ShellExtDllPlatform>$(Platform.ToLower())</_ShellExtDllPlatform>
 			<_ShellExtDllPlatform Condition="'$(_ShellExtDllPlatform)' != 'x86' and '$(_ShellExtDllPlatform)' != 'x64' and '$(_ShellExtDllPlatform)' != 'arm64'">x86</_ShellExtDllPlatform>
 			<_ShellExtDllConfiguration>$(Configuration)</_ShellExtDllConfiguration>
 			<_ShellExtDllConfiguration Condition="'$(_ShellExtDllConfiguration)' != 'Debug' and '$(_ShellExtDllConfiguration)' != 'Release'">Release</_ShellExtDllConfiguration>
 		</PropertyGroup>
-		<Exec WorkingDirectory="$(_ShellExtDllWorkDir)" Command="build.bat $(Platform) $(Configuration)" ContinueOnError="false">
+		<Exec WorkingDirectory="$(_ShellExtDllWorkDir)" Command="build.bat $(_ShellExtDllPlatform) $(Configuration)" ContinueOnError="false">
 			<Output TaskParameter="ExitCode" PropertyName="_CommandExitCode" />
 		</Exec>
 		<ItemGroup Condition="'$(_CommandExitCode)' == '0'">
