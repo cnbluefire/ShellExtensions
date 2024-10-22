@@ -42,6 +42,14 @@
 [ExplorerContextMenu](./docs/ExplorerContextMenu.md)
 使用 json 配置资源管理器右键菜单
 
+### 注意事项
+在 appxmanifest.xml 中配置右键菜单时，desktop5:Verb 的 Id 属性应该以 "C" 开头，否则在文件夹的经典右键菜单中可能不显示。
+```xml
+<desktop5:ItemType Type="Directory">
+    <desktop5:Verb Id="CExplorerContextMenu" Clsid="your guid" />
+</desktop5:ItemType>
+```
+
 <!-- links -->
 [your-project-path]:cnbluefire/ShellExtensions
 [license-shield]: https://img.shields.io/github/license/cnbluefire/ShellExtensions.svg?style=flat

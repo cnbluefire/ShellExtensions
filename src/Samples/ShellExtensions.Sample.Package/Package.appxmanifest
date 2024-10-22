@@ -78,10 +78,10 @@
 				<desktop4:Extension Category="windows.fileExplorerContextMenus">
 					<desktop4:FileExplorerContextMenus>
 						<desktop4:ItemType Type=".xyz">
-							<desktop4:Verb Id="ShellExt" Clsid="A7234747-7C8E-4FF6-B284-9E6A014957B7"/>
+							<desktop4:Verb Id="CShellExt" Clsid="A7234747-7C8E-4FF6-B284-9E6A014957B7"/>
 						</desktop4:ItemType>
 						<desktop5:ItemType Type="Directory">
-							<desktop5:Verb Id="ExplorerContextMenu" Clsid="8BC30CD2-B515-4E55-851C-31ACCD0ECFAF"/>
+							<desktop5:Verb Id="CExplorerContextMenu" Clsid="8BC30CD2-B515-4E55-851C-31ACCD0ECFAF"/>
 						</desktop5:ItemType>
 					</desktop4:FileExplorerContextMenus>
 				</desktop4:Extension>
