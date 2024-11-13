@@ -61,13 +61,6 @@ public static class DllMain
         return hr;
     }
 
-
-    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)], EntryPoint = "Test")]
-    private static void Test()
-    {
-        LoadResource();
-    }
-
     public unsafe static Models.ExplorerContextMenuModel? LoadResource()
     {
         char* ptr = null;
