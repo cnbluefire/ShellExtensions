@@ -4,20 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace ExplorerContextMenu.ResourceHelper;
 
-public static class Program
+internal static class Program
 {
-    public static async Task Main(string[] args)
+    internal static async Task Main(string[] args)
     {
 #if DEBUG
         if (args.Length == 0)
         {
-            //args = [
-            //    "--input", "D:\\blue-fire\\source\\repos\\ShellExtensions\\src\\Samples\\ShellExtensions.Package\\bin\\x64\\Debug\\AppX\\ConsoleApp\\ExplorerContextMenu.dll",
-            //    "--resource-json","C:\\Users\\blue-fire\\Downloads\\1\\menu.json",
-            //    "--output", "D:\\blue-fire\\source\\repos\\ShellExtensions\\src\\Samples\\ShellExtensions.Package\\bin\\x64\\Debug\\AppX\\ConsoleApp\\ExplorerContextMenu.2.dll",
-            //    "--overwritten", "true"
-            //];
-
             var cmd = """
                 --input "C:\Users\blue-fire\source\repos\ShellExtensions\src\nuget\ExplorerContextMenu\build\..\tools\x86\ExplorerContextMenu.dll" --resource-json "C:\Users\blue-fire\source\repos\ShellExtensions\src\Samples\ConsoleApp\ExplorerContextMenu.json" --output "C:\Users\blue-fire\source\repos\ShellExtensions\src\Samples\ConsoleApp\obj\Debug\net8.0-windows8.0\ExplorerContextMenu\abc.dll" --overwritten"
                 """;
@@ -107,7 +100,7 @@ public static class Program
             return;
         }
 
-        var handle = NativeMethods.BeginUpdateResource(outputFile.FullName, true);
+        var handle = ResourceWriter.BeginUpdateResource(outputFile.FullName, true);
         if (handle == IntPtr.Zero)
         {
             HandleLastWin32Error();
@@ -121,10 +114,10 @@ public static class Program
         catch (Exception ex)
         {
             HandleException(ex);
-            NativeMethods.EndUpdateResource(handle, true);
+            ResourceWriter.EndUpdateResource(handle, true);
             return;
         }
-        var res = NativeMethods.EndUpdateResource(handle, false);
+        var res = ResourceWriter.EndUpdateResource(handle, false);
 
         if (!res)
         {
@@ -153,74 +146,4 @@ internal static class HResults
     public const int E_INVALIDARG = unchecked((int)0x80070057);
 
     public const int E_UNEXPECTED = unchecked((int)0x8000FFFF);
-}
-
-internal unsafe static class NativeMethods
-{
-    public static bool UpdateResource(
-        IntPtr hUpdate,
-        ResourceName lpType,
-        ResourceName lpName,
-        ushort wLanguage,
-        void* lpData,
-        uint cb)
-    {
-        var lpTypeName = lpType.Name ?? "";
-        var lpNameName = lpName.Name ?? "";
-
-        fixed (char* pTypeName = lpTypeName)
-        fixed (char* pNameName = lpNameName)
-        {
-            var pTypeName1 = pTypeName;
-            var pNameName1 = pNameName;
-
-            if (lpType.Name == null) pTypeName1 = (char*)lpType.Id;
-            if (lpName.Name == null) pNameName1 = (char*)lpName.Id;
-
-            return UpdateResource(hUpdate, pTypeName1, pNameName1, wLanguage, lpData, cb);
-        }
-    }
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true)]
-    internal static extern IntPtr BeginUpdateResource(
-        [MarshalAs(UnmanagedType.LPWStr)] string pFileName,
-        bool bDeleteExistingResources);
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true)]
-    internal static extern bool EndUpdateResource(IntPtr hUpdate, bool fDiscard);
-
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true)]
-    private static extern bool UpdateResource(
-        IntPtr hUpdate,
-        char* lpType,
-        char* lpName,
-        ushort wLanguage,
-        void* lpData,
-        uint cb);
-
-
-}
-
-internal struct ResourceName
-{
-    public ResourceName(string name)
-    {
-        Id = 0;
-
-        if (name.Length == 0) Name = "\0";
-        else if (name[name.Length - 1] == '\0') Name = name;
-        else Name = name + "\0";
-    }
-
-    public ResourceName(ushort id) { Name = null; Id = id; }
-
-    public string? Name;
-
-    public ushort Id;
-
-
-
-    public static implicit operator ResourceName(string name) => new ResourceName(name);
-
-    public static implicit operator ResourceName(ushort id) => new ResourceName(id);
 }

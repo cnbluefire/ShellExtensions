@@ -274,7 +274,7 @@ namespace ExplorerContextMenu.ResourceHelper
 
             fixed (byte* lpData = span)
             {
-                var res = NativeMethods.UpdateResource(
+                var res = UpdateResource(
                     hResource,
                     RT_STRING,
                     sectionId,
@@ -367,7 +367,7 @@ namespace ExplorerContextMenu.ResourceHelper
                 bool res = false;
                 fixed (byte* lpData = groupData)
                 {
-                    res = NativeMethods.UpdateResource(
+                    res = UpdateResource(
                         hResource,
                         RT_GROUP_ICON,
                         iconGroupId,
@@ -385,7 +385,7 @@ namespace ExplorerContextMenu.ResourceHelper
                 {
                     fixed (byte* lpData = iconData[i].Data)
                     {
-                        res = NativeMethods.UpdateResource(
+                        res = UpdateResource(
                             hResource,
                             RT_ICON,
                             iconData[i].Id,
@@ -414,5 +414,80 @@ namespace ExplorerContextMenu.ResourceHelper
             }
             return guid;
         }
+
+        private static bool UpdateResource(
+            IntPtr hUpdate,
+            ResourceName lpType,
+            ResourceName lpName,
+            ushort wLanguage,
+            void* lpData,
+            uint cb)
+        {
+            var lpTypeName = lpType.Name ?? "";
+            var lpNameName = lpName.Name ?? "";
+
+            fixed (char* pTypeName = lpTypeName)
+            fixed (char* pNameName = lpNameName)
+            {
+                var pTypeName1 = pTypeName;
+                var pNameName1 = pNameName;
+
+                if (lpType.Name == null) pTypeName1 = (char*)lpType.Id;
+                if (lpName.Name == null) pNameName1 = (char*)lpName.Id;
+
+                return UpdateResource(hUpdate, pTypeName1, pNameName1, wLanguage, lpData, cb);
+            }
+        }
+
+        private struct ResourceName
+        {
+            public ResourceName(string name)
+            {
+                Id = 0;
+
+                if (name.Length == 0) Name = "\0";
+                else if (name[name.Length - 1] == '\0') Name = name;
+                else Name = name + "\0";
+            }
+
+            public ResourceName(ushort id) { Name = null; Id = id; }
+
+            public string? Name;
+
+            public ushort Id;
+
+
+
+            public static implicit operator ResourceName(string name) => new ResourceName(name);
+
+            public static implicit operator ResourceName(ushort id) => new ResourceName(id);
+        }
+
+        public static nint BeginUpdateResource(
+            string pFileName,
+            bool bDeleteExistingResources)
+        {
+            fixed (char* _pFileName = pFileName)
+            {
+                return BeginUpdateResource(_pFileName, bDeleteExistingResources);
+            }
+        }
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true)]
+        private static extern nint BeginUpdateResource(
+            char* pFileName,
+            bool bDeleteExistingResources);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true)]
+        public static extern bool EndUpdateResource(nint hUpdate, bool fDiscard);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true)]
+        private static extern bool UpdateResource(
+            nint hUpdate,
+            char* lpType,
+            char* lpName,
+            ushort wLanguage,
+            void* lpData,
+            uint cb);
     }
 }
