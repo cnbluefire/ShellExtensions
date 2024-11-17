@@ -24,9 +24,10 @@ namespace ExplorerContextMenu.ResourceHelper
 
             if (model != null
                 && model.MenuItems != null
-                && model.MenuItems.Count > 0
-                && NormalizeItems(model.MenuItems, out var icons))
+                && model.MenuItems.Count > 0)
             {
+                NormalizeItems(model.MenuItems, out var icons);
+
                 if (string.IsNullOrEmpty(model.ConfigRegistryKey))
                 {
                     model.ConfigRegistryKey = Models.ExplorerContextMenuModel.DefaultConfigRegistryKey;
@@ -80,23 +81,7 @@ namespace ExplorerContextMenu.ResourceHelper
             }
         }
 
-        private static bool ProcessModel(
-            Models.ExplorerContextMenuModel model,
-            [NotNullWhen(true)] out Dictionary<string, (ushort icon, ushort darkIcon)>? icons)
-        {
-            icons = null;
-
-            if (model != null
-                && model.MenuItems != null
-                && model.MenuItems.Count > 0
-                && NormalizeItems(model.MenuItems, out icons))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private static bool NormalizeItems(
+        private static void NormalizeItems(
             List<Models.ExplorerContextMenuItemModel> items,
             [NotNullWhen(true)] out Dictionary<string, (ushort icon, ushort darkIcon)>? icons)
         {
@@ -106,10 +91,16 @@ namespace ExplorerContextMenu.ResourceHelper
             var dict = new Dictionary<string, Models.ExplorerContextMenuItemModel>();
             foreach (var item in items)
             {
-                if (!Guid.TryParse(item?.Guid, out var guid)) return false;
+                if (item == null) throw new ArgumentException(nameof(item));
+
+                var guid = Guid.Parse(item.Guid);
                 var nGuid = guid.ToString("N");
-                if (dict.ContainsKey(nGuid)) return false;
-                dict.Add(nGuid, item);
+
+                if (!dict.TryAdd(nGuid, item))
+                {
+                    throw new ArgumentException($"An item with the same key has already been added. Key: {FormatGuid(nGuid)}");
+                }
+
                 item.Guid = nGuid;
 
                 if (item.SubMenuItems != null)
@@ -128,7 +119,10 @@ namespace ExplorerContextMenu.ResourceHelper
             foreach (var item in dict)
             {
                 parents.Clear();
-                if (CheckRecursion(item.Value, dict, parents)) return false;
+                if (CheckRecursion(item.Value, dict, parents))
+                {
+                    throw new InvalidOperationException($"recursion SubMenuItems is not supported. GUID: {FormatGuid(item.Key)}");
+                }
             }
 
             icons = new Dictionary<string, (ushort icon, ushort darkIcon)>();
@@ -148,7 +142,6 @@ namespace ExplorerContextMenu.ResourceHelper
                 }
             }
 
-            return true;
 
             void NormalizeIcon(Models.ExplorerContextMenuItemIconModel _iconModel, ref ushort _globalId, out ushort _iconId)
             {
@@ -270,7 +263,7 @@ namespace ExplorerContextMenu.ResourceHelper
             bool IsSeparatorChar(char _ch) => _ch == '*' || _ch == '-' || _ch == '_';
         }
 
-        private static bool WriteJsonResource(IntPtr hResource, string json, ushort sectionId)
+        private static void WriteJsonResource(IntPtr hResource, string json, ushort sectionId)
         {
             var bytes = new byte[json.Length * sizeof(char) + sizeof(ushort)];
 
@@ -281,13 +274,18 @@ namespace ExplorerContextMenu.ResourceHelper
 
             fixed (byte* lpData = span)
             {
-                return NativeMethods.UpdateResource(
+                var res = NativeMethods.UpdateResource(
                     hResource,
                     RT_STRING,
                     sectionId,
                     0,
                     lpData,
                     (uint)bytes.Length);
+
+                if (!res)
+                {
+                    Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
+                }
             }
         }
 
@@ -408,105 +406,13 @@ namespace ExplorerContextMenu.ResourceHelper
             }
         }
 
-        private static string? GetJsonText(string resourceFilePath)
+        private static string FormatGuid(string guid)
         {
-            //var model = new Models.ExplorerContextMenuModel()
-            //{
-            //    MenuItems = new List<Models.ExplorerContextMenuItemModel>()
-            //    {
-            //        new Models.ExplorerContextMenuItemModel()
-            //        {
-            //            Guid = "67691CB3-DB2C-4141-B168-E8110DCDB236",
-            //            ExecuteOptions = new Models.ExplorerContextMenuItemExecuteOptions()
-            //            {
-            //                Command = "notepad.exe {item}",
-            //            },
-            //            HasMultipleItemsSupport = false,
-            //            Title = new Dictionary<string, string>()
-            //            {
-            //                ["en"] = "Test 123",
-            //                ["zh-Hans"] = "测试 123"
-            //            },
-            //            Icon = new Models.ExplorerContextMenuItemIconModel()
-            //            {
-            //                IconFile = "C:\\Users\\blue-fire\\Downloads\\1\\test.ico",
-            //            },
-            //            //SubMenuItems = new List<string>()
-            //            //{
-            //            //    "27A1F671-03D9-43B1-8991-CBC24D79B385",
-            //            //    "50E01E94-ACA0-4624-B666-8ECF08B1CEA6",
-            //            //    "A78879BA-CDE7-452C-A003-BBEEE9A8E450"
-            //            //},
-            //        },
-            //        new Models.ExplorerContextMenuItemModel()
-            //        {
-            //            Guid = "27A1F671-03D9-43B1-8991-CBC24D79B385",
-            //            Title = new Dictionary<string, string>()
-            //            {
-            //                ["en"] = "Test1"
-            //            },
-            //            CheckOptions = new Models.ExplorerContextMenuItemCheckOptions()
-            //            {
-            //                IsCheckable = true,
-            //                CheckType = Models.ExplorerContextMenuItemCheckType.RadioCheck,
-            //                GroupName = "Test",
-            //                DefaultChecked = true,
-            //            },
-            //            HasMultipleItemsSupport = false
-            //        },
-            //        new Models.ExplorerContextMenuItemModel()
-            //        {
-            //            Guid = "50E01E94-ACA0-4624-B666-8ECF08B1CEA6",
-            //            Title = new Dictionary<string, string>()
-            //            {
-            //                ["en"] = "Test2"
-            //            },
-            //            CheckOptions = new Models.ExplorerContextMenuItemCheckOptions()
-            //            {
-            //                IsCheckable = true,
-            //                CheckType = Models.ExplorerContextMenuItemCheckType.Check,
-            //                GroupName = "Test"
-            //            },
-            //            HasFolderSupport = false
-            //        },
-            //        new Models.ExplorerContextMenuItemModel()
-            //        {
-            //            Guid = "A78879BA-CDE7-452C-A003-BBEEE9A8E450",
-            //            Title = new Dictionary<string, string>()
-            //            {
-            //                ["en"] = "Test3"
-            //            },
-            //            CheckOptions = new Models.ExplorerContextMenuItemCheckOptions()
-            //            {
-            //                IsCheckable = true,
-            //                CheckType = Models.ExplorerContextMenuItemCheckType.Check,
-            //                GroupName = "Test"
-            //            },
-            //        }
-            //    }
-            //};
-
-
-
-            return null;
+            if (Guid.TryParse(guid, out var _guid))
+            {
+                guid = _guid.ToString("B");
+            }
+            return guid;
         }
-
-        //private static JsonSerializerOptions GetJsonSerializerOptions() =>
-        //    new JsonSerializerOptions()
-        //    {
-        //        AllowTrailingCommas = true,
-        //        ReadCommentHandling = JsonCommentHandling.Skip,
-        //        PropertyNameCaseInsensitive = true,
-        //        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-        //        NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
-        //        PreferredObjectCreationHandling = System.Text.Json.Serialization.JsonObjectCreationHandling.Populate,
-        //        UnmappedMemberHandling = System.Text.Json.Serialization.JsonUnmappedMemberHandling.Skip,
-        //        WriteIndented = false,
-        //        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        //        Converters =
-        //        {
-        //            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-        //        }
-        //    };
     }
 }

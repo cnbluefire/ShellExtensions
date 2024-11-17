@@ -12,6 +12,7 @@ IEnumExplorerCommand
 IFolderView
 IThumbnailProvider
 IUIAutomation
+ICreateProcessInputs
 
 MessageBox
 
@@ -49,11 +50,13 @@ GetWindowLongW
 GetWindow
 VerifyVersionInfoW
 VerSetConditionMask
+ShellExecuteExW
 
 SYS_COLOR_INDEX
 IDC_ARROW
 WM_*
 _EXPCMDSTATE
 _EXPCMDFLAGS
+SEE_MASK_*
 
 Windows.Win32.Storage.Packaging.Appx.PACKAGE_VERSION

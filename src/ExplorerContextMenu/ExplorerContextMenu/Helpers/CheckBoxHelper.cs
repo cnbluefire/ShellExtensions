@@ -1,4 +1,5 @@
 ﻿using ExplorerContextMenu.Models;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ExplorerContextMenu.Helpers
@@ -131,6 +132,27 @@ namespace ExplorerContextMenu.Helpers
                 }
             }
             return null;
+        }
+
+        internal void AppendEnvironmentVariables(ref Dictionary<string, string>? variables)
+        {
+            for (int i = 0; i < factory.RootModel.MenuItems.Count; i++)
+            {
+                var item = factory.RootModel.MenuItems[i];
+                if (item.CheckOptions != null
+                    && item.CheckOptions.IsCheckable
+                    && Guid.TryParse(item.Guid, out var guid))
+                {
+                    var isChecked = IsChecked(guid);
+                    if (isChecked.HasValue)
+                    {
+                        var guidN = guid.ToString("N");
+
+                        if (variables == null) variables = new Dictionary<string, string>();
+                        variables[$"ExplorerContextMenu_{guidN}_Checked"] = isChecked.Value ? "1" : "0";
+                    }
+                }
+            }
         }
     }
 }

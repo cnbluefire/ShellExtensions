@@ -8,6 +8,11 @@
         public string Command { get; set; }
 
         /// <summary>
+        /// 拼接 Command 时使用 UrlEncode 编码参数
+        /// </summary>
+        public bool CommandIsUri { get; set; } = false;
+
+        /// <summary>
         /// 多文件的操作
         /// </summary>
         public ExplorerContextMenuItemMultipleItemsOperation MultipleItemsOperation { get; set; }

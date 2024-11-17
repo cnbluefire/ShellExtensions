@@ -1,4 +1,5 @@
-﻿using ExplorerContextMenu.Helpers;
+﻿using ExplorerContextMenu.ComObjects;
+using ExplorerContextMenu.Helpers;
 using ExplorerContextMenu.Models;
 using ShellExtensions;
 using ShellExtensions.Helpers;
@@ -203,7 +204,8 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
             var context = new ParameterContext(
                 model,
                 shellItems,
-                () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder);
+                () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder,
+                false);
             if (context.TryFormat(title, out var result))
             {
                 return result;
@@ -221,7 +223,8 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
             var context = new ParameterContext(
                 model,
                 shellItems,
-                () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder);
+                () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder,
+                false);
             if (context.TryFormat(toolTip, out var result))
             {
                 return result;
@@ -245,7 +248,8 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
             var context = new ParameterContext(
                 model,
                 shellItems,
-                () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder);
+                () => this.ServiceProvider.GetService<IDirectoryBackgroundAccessor>()?.ShellFolder,
+                false);
             if (context.TryFormat(icon, out var result))
             {
                 return result;
@@ -281,7 +285,7 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
 
         if (!string.IsNullOrEmpty(command))
         {
-            var context = new ParameterContext(model, args.ShellItems, () => args.Folder);
+            var context = new ParameterContext(model, args.ShellItems, () => args.Folder, model.ExecuteOptions!.CommandIsUri);
             if (model.ExecuteOptions!.MultipleItemsOperation == ExplorerContextMenuItemMultipleItemsOperation.OneByOne)
             {
                 for (var i = 0; i < context.ShellItemsCount; i++)
@@ -289,7 +293,7 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
                     context.Index = i;
                     if (context.TryFormat(command, out var result))
                     {
-                        StartProcess(result, model.Flags?.HasLuaShield ?? false);
+                        StartProcess(result, model.Flags?.HasLuaShield ?? false, factory);
                     }
                 }
             }
@@ -297,26 +301,54 @@ internal class ModelBasedCommand : ShellExtensions.ExplorerCommand
             {
                 if (context.TryFormat(command, out var result))
                 {
-                    StartProcess(result, model.Flags?.HasLuaShield ?? false);
+                    StartProcess(result, model.Flags?.HasLuaShield ?? false, factory);
                 }
             }
         }
 
-        static void StartProcess(string _command, bool _hasLuaShield)
+        unsafe static bool StartProcess(string _command, bool _hasLuaShield, ModelFactory _factory)
         {
-            var psi = CommandHelper.CreateProcessStartInfo(_command);
-
-            if (psi != null)
+            if (CommandHelper.TryParseCommand(_command, out var _fileName, out var _parameters))
             {
-                if (_hasLuaShield)
+                var _verb = _hasLuaShield switch
                 {
-                    psi.Verb = "runas";
-                }
+                    true => "runas",
+                    _ => "open"
+                };
 
-                try
-                { Process.Start(psi); }
-                catch { }
+                fixed (char* pVerb = _verb, pFileName = _fileName, pParameters = _parameters)
+                {
+                    var shellExecuteInfo = new Windows.Win32.UI.Shell.SHELLEXECUTEINFOW();
+                    shellExecuteInfo.cbSize = (uint)sizeof(Windows.Win32.UI.Shell.SHELLEXECUTEINFOW);
+                    shellExecuteInfo.nShow = 1;
+                    shellExecuteInfo.lpVerb = pVerb;
+                    shellExecuteInfo.lpFile = pFileName;
+                    shellExecuteInfo.lpParameters = pParameters;
+                    shellExecuteInfo.fMask =
+                        Windows.Win32.PInvoke.SEE_MASK_NOCLOSEPROCESS
+                        | Windows.Win32.PInvoke.SEE_MASK_FLAG_DDEWAIT;
+
+                    Dictionary<string, string>? environmentVariables = null;
+                    _factory.CheckBoxHelper.AppendEnvironmentVariables(ref environmentVariables);
+
+                    if (environmentVariables != null && environmentVariables.Count > 0)
+                    {
+                        shellExecuteInfo.fMask |= Windows.Win32.PInvoke.SEE_MASK_FLAG_HINST_IS_SITE;
+                        shellExecuteInfo.hInstApp = (Windows.Win32.Foundation.HINSTANCE)CCreatingProcess.CreateSite(out var creatingProcess);
+
+                        creatingProcess.ProcessCreating += (s, a) =>
+                        {
+                            foreach (var (k, v) in environmentVariables)
+                            {
+                                a.CreateProcessInputs->SetEnvironmentVariable(k, v);
+                            }
+                        };
+                    }
+
+                    return Windows.Win32.PInvoke.ShellExecuteEx(&shellExecuteInfo);
+                }
             }
+            return false;
         }
     }
 }

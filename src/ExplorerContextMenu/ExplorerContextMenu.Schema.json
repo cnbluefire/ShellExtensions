@@ -41,6 +41,9 @@
                         "null"
                     ]
                 },
+                "commandIsUri": {
+                    "type": "boolean"
+                },
                 "multipleItemsOperation": {
                     "type": "string",
                     "enum": [

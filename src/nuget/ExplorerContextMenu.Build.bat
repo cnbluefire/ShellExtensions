@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 set DOTNET_CLI_UI_LANGUAGE=en
 set VSLANG=en
 
@@ -22,19 +22,19 @@ mkdir %NUGET_ROOT%tools\x64
 mkdir %NUGET_ROOT%tools\arm64
 
 rmdir /s /q %BUILD_FILES% >nul 2>nul
-dotnet publish %DLL_PROJECT_FILE% -c Release -r win-x86 -o %BUILD_FILES%
+dotnet publish %DLL_PROJECT_FILE% -c Release -p:Platform=x86 -r win-x86 -o %BUILD_FILES%
 if %ERRORLEVEL% NEQ 0 goto EXIT
 xcopy %BUILD_FILES%ExplorerContextMenu.dll %NUGET_ROOT%tools\x86\
 if %ERRORLEVEL% NEQ 0 goto EXIT
 
 rmdir /s /q %BUILD_FILES% >nul 2>nul
-dotnet publish %DLL_PROJECT_FILE% -c Release -r win-x64 -o %BUILD_FILES%
+dotnet publish %DLL_PROJECT_FILE% -c Release -p:Platform=x64 -r win-x64 -o %BUILD_FILES%
 if %ERRORLEVEL% NEQ 0 goto EXIT
 xcopy %BUILD_FILES%ExplorerContextMenu.dll %NUGET_ROOT%tools\x64\
 if %ERRORLEVEL% NEQ 0 goto EXIT
 
 rmdir /s /q %BUILD_FILES% >nul 2>nul
-dotnet publish %DLL_PROJECT_FILE% -c Release -r win-arm64 -o %BUILD_FILES%
+dotnet publish %DLL_PROJECT_FILE% -c Release -p:Platform=ARM64 -r win-arm64 -o %BUILD_FILES%
 if %ERRORLEVEL% NEQ 0 goto EXIT
 xcopy %BUILD_FILES%ExplorerContextMenu.dll %NUGET_ROOT%tools\arm64\
 if %ERRORLEVEL% NEQ 0 goto EXIT

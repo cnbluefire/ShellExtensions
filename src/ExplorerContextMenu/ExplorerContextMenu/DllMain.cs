@@ -13,29 +13,32 @@ namespace ExplorerContextMenu;
 
 public static class DllMain
 {
-#pragma warning disable CA2255
-    [ModuleInitializer]
-#pragma warning restore CA2255
-    public static void Init()
+    private static byte initFlag = 0;
+
+    private static void Initialize()
     {
-        cachedItems = new ConcurrentDictionary<Guid, nint>();
-        var rootModel = LoadResource();
-        if (rootModel != null)
+        var flag = Interlocked.Exchange(ref initFlag, 1);
+        if (flag == 0)
         {
-            var factory = new ModelFactory(rootModel);
-
-            foreach (var key in factory.GetKeys())
+            cachedItems = new ConcurrentDictionary<Guid, nint>();
+            var rootModel = LoadResource();
+            if (rootModel != null)
             {
-                var item = factory.GetItem(key);
-                if (item != null)
+                var factory = new ModelFactory(rootModel);
+
+                foreach (var key in factory.GetKeys())
                 {
-                    ShellExtensions.ShellExtensionsClassFactory.RegisterInProcess(key, () => new ModelBasedCommand(factory, item));
+                    var item = factory.GetItem(key);
+                    if (item != null)
+                    {
+                        ShellExtensions.ShellExtensionsClassFactory.RegisterInProcess(key, () => new ModelBasedCommand(factory, item));
+                    }
                 }
-            }
 
-            foreach (var key in factory.SeparatorGuids)
-            {
-                ShellExtensions.ShellExtensionsClassFactory.RegisterInProcess(key, () => new SeparatorCommand(key));
+                foreach (var key in factory.SeparatorGuids)
+                {
+                    ShellExtensions.ShellExtensionsClassFactory.RegisterInProcess(key, () => new SeparatorCommand(key));
+                }
             }
         }
     }
@@ -48,6 +51,8 @@ public static class DllMain
     [UnmanagedCallersOnly(EntryPoint = "DllGetClassObject")]
     private unsafe static int DllGetClassObject(Guid* clsid, Guid* riid, void** ppv)
     {
+        Initialize();
+
         if (cachedItems != null && cachedItems.TryGetValue(*clsid, out var pv))
         {
             *ppv = (void*)pv;
@@ -72,17 +77,12 @@ public static class DllMain
         if (length > 0)
         {
             var json = new string(ptr, 0, length);
-            Console.WriteLine(json);
 
             try
             {
                 return JsonSerializer.Deserialize(json, JsonModelContext.Default.ExplorerContextMenuModel);
             }
             catch { }
-        }
-        else
-        {
-            Console.WriteLine(Marshal.GetLastWin32Error());
         }
 
         return null;

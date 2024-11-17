@@ -1,5 +1,5 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/cnbluefire/ShellExtensions/src/ExplorerContextMenu/ExplorerContextMenu.Schema.json",
+    "$schema": "https://raw.githubusercontent.com/cnbluefire/ShellExtensions/refs/heads/main/src/ExplorerContextMenu/ExplorerContextMenu.Schema.json",
     "menuItems": [
         {
             "guid": "8BC30CD2-B515-4E55-851C-31ACCD0ECFAF",
@@ -21,6 +21,16 @@
                 "151CBE4A-6155-4FB0-97F6-406BCA38C1F8",
                 "EF137A4E-026F-4DBD-A018-1DF5DE4BC765"
             ]
+        },
+        {
+            "guid": "46E64A86-D854-40E4-B258-55255FB6B7BC",
+            "title": {
+                "en": "Open with Notepad"
+            },
+            "executeOptions": {
+                "multipleItemsOperation": "OneByOne",
+                "command": "notepad.exe {item}"
+            }
         },
         {
             "guid": "57CB061C-FDF5-4727-91F1-A0F0B449A806",
@@ -84,12 +94,6 @@
             },
             "visibilityOptions": {
               "registryOverrideSupport": true
-            }
-        },
-        {
-            "guid": "46E64A86-D854-40E4-B258-55255FB6B7BC",
-            "title": {
-                "en": "{itemName}"
             }
         }
     ]

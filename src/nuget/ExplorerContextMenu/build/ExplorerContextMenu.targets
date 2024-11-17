@@ -1,53 +1,59 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Target Name="ExplorerContextMenuGenerateDll" BeforeTargets="BeforeBuild"
+	<Target Name="ExplorerContextMenuGenerateDll" BeforeTargets="BeforeBuild"
             Condition="'$(ExplorerContextMenuEnabled)' == 'True'">
 
 		<Error Text="ExplorerContextMenu is supported only on Windows." Condition="'$(OS)' != 'Windows_NT'" />
 
 		<PropertyGroup>
-            <ExplorerContextMenuOutputFileName Condition="'$(ExplorerContextMenuOutputFileName)' == ''">ExplorerContextMenu.dll</ExplorerContextMenuOutputFileName>
+			<ExplorerContextMenuOutputFileName Condition="'$(ExplorerContextMenuOutputFileName)' == ''">ExplorerContextMenu.dll</ExplorerContextMenuOutputFileName>
 		</PropertyGroup>
 
-        <ItemGroup>
-            <_ExplorerContextMenuResource Include="@(ExplorerContextMenuResource)" />
-            <_ExplorerContextMenuIntermediateFile Include="$(IntermediateOutputPath)ExplorerContextMenu\$(ExplorerContextMenuOutputFileName)" />
-        </ItemGroup>
+		<ItemGroup>
+			<_ExplorerContextMenuResource Include="@(ExplorerContextMenuResource)" />
+			<_ExplorerContextMenuIntermediateFile Include="$(IntermediateOutputPath)ExplorerContextMenu\$(ExplorerContextMenuOutputFileName)" />
+		</ItemGroup>
 
-        <PropertyGroup>
-            <ExplorerContextMenuFilePlatform Condition="'$(ExplorerContextMenuFilePlatform)' == ''">$(Platform)</ExplorerContextMenuFilePlatform>
-            <ExplorerContextMenuFilePlatform Condition="'$(ExplorerContextMenuFilePlatform)' == '' or '$(ExplorerContextMenuFilePlatform)' == 'Win32' or '$(ExplorerContextMenuFilePlatform)' == 'AnyCPU'">x86</ExplorerContextMenuFilePlatform>
-            <ExplorerContextMenuFilePlatform Condition="'$(ExplorerContextMenuFilePlatform)' != 'x86' and '$(ExplorerContextMenuFilePlatform)' != 'x64' and '$(ExplorerContextMenuFilePlatform)' != 'ARM64'">x86</ExplorerContextMenuFilePlatform>
-            <ExplorerContextMenuInputFile Condition="'$(ExplorerContextMenuInputFile)' == ''">$(MSBuildThisFileDirectory)..\tools\$(ExplorerContextMenuFilePlatform)\ExplorerContextMenu.dll</ExplorerContextMenuInputFile>
-            <ExplorerContextMenuResHelper Condition="'$(ExplorerContextMenuResHelper)' == ''">$(MSBuildThisFileDirectory)..\tools\reshelper.exe</ExplorerContextMenuResHelper>
-            <ExplorerContextMenuOutputFileName Condition="'$(ExplorerContextMenuOutputFileName)' == ''">ExplorerContextMenu.dll</ExplorerContextMenuOutputFileName>
+		<PropertyGroup>
+			<ExplorerContextMenuFilePlatform Condition="'$(ExplorerContextMenuFilePlatform)' == ''">$(Platform)</ExplorerContextMenuFilePlatform>
+			<ExplorerContextMenuFilePlatform Condition="'$(ExplorerContextMenuFilePlatform)' == '' or '$(ExplorerContextMenuFilePlatform)' == 'Win32' or '$(ExplorerContextMenuFilePlatform)' == 'AnyCPU'">x86</ExplorerContextMenuFilePlatform>
+			<ExplorerContextMenuFilePlatform Condition="'$(ExplorerContextMenuFilePlatform)' != 'x86' and '$(ExplorerContextMenuFilePlatform)' != 'x64' and '$(ExplorerContextMenuFilePlatform)' != 'ARM64'">x86</ExplorerContextMenuFilePlatform>
+			<ExplorerContextMenuInputFile Condition="'$(ExplorerContextMenuInputFile)' == ''">$(MSBuildThisFileDirectory)..\tools\$(ExplorerContextMenuFilePlatform)\ExplorerContextMenu.dll</ExplorerContextMenuInputFile>
+			<ExplorerContextMenuResHelper Condition="'$(ExplorerContextMenuResHelper)' == ''">$(MSBuildThisFileDirectory)..\tools\reshelper.exe</ExplorerContextMenuResHelper>
+			<ExplorerContextMenuOutputFileName Condition="'$(ExplorerContextMenuOutputFileName)' == ''">ExplorerContextMenu.dll</ExplorerContextMenuOutputFileName>
 
-            <_ExplorerContextMenuJsonFilePath>%(_ExplorerContextMenuResource.FullPath)</_ExplorerContextMenuJsonFilePath>
-            <_ExplorerContextMenuIntermediateFilePath>%(_ExplorerContextMenuIntermediateFile.FullPath)</_ExplorerContextMenuIntermediateFilePath>
-            <_ExplorerContextMenuParam>--input "$(ExplorerContextMenuInputFile)" --resource-json "$(_ExplorerContextMenuJsonFilePath)" --output "$(_ExplorerContextMenuIntermediateFilePath)" --overwritten</_ExplorerContextMenuParam>
+			<_ExplorerContextMenuJsonFilePath>%(_ExplorerContextMenuResource.FullPath)</_ExplorerContextMenuJsonFilePath>
+			<_ExplorerContextMenuIntermediateFilePath>%(_ExplorerContextMenuIntermediateFile.FullPath)</_ExplorerContextMenuIntermediateFilePath>
+			<_ExplorerContextMenuParam>--input "$(ExplorerContextMenuInputFile)" --resource-json "$(_ExplorerContextMenuJsonFilePath)" --output "$(_ExplorerContextMenuIntermediateFilePath)" --overwritten</_ExplorerContextMenuParam>
 
-            <_ExplorerContextMenuJsonFileExist>$([System.IO.File]::Exists('$(_ExplorerContextMenuJsonFilePath)'))</_ExplorerContextMenuJsonFileExist>
-            <_ExplorerContextMenuResHelperExitCode>-1</_ExplorerContextMenuResHelperExitCode>
-            <_ExplorerContextMenuExecCommand>false</_ExplorerContextMenuExecCommand>
-            <_ExplorerContextMenuExecCommand Condition="'$(ExplorerContextMenuInputFile)' != '' and '$(ExplorerContextMenuResHelper)' != '' and '$(ExplorerContextMenuOutputFileName)' != '' and '$(_ExplorerContextMenuJsonFileExist)' == 'True'">true</_ExplorerContextMenuExecCommand>
-            <_ExplorerContextMenuMessageImportance>normal</_ExplorerContextMenuMessageImportance>
-            <_ExplorerContextMenuMessageImportance Condition="'$(_ExplorerContextMenuExecCommand)' == 'True'">high</_ExplorerContextMenuMessageImportance>
-        </PropertyGroup>
+			<_ExplorerContextMenuJsonFileExist>$([System.IO.File]::Exists('$(_ExplorerContextMenuJsonFilePath)'))</_ExplorerContextMenuJsonFileExist>
+			<_ExplorerContextMenuResHelperExitCode>-1</_ExplorerContextMenuResHelperExitCode>
+			<_ExplorerContextMenuResHelperConsoleOutput>-1</_ExplorerContextMenuResHelperConsoleOutput>
+			<_ExplorerContextMenuExecCommand>false</_ExplorerContextMenuExecCommand>
+			<_ExplorerContextMenuExecCommand Condition="'$(ExplorerContextMenuInputFile)' != '' and '$(ExplorerContextMenuResHelper)' != '' and '$(ExplorerContextMenuOutputFileName)' != '' and '$(_ExplorerContextMenuJsonFileExist)' == 'True'">true</_ExplorerContextMenuExecCommand>
+			<_ExplorerContextMenuMessageImportance>normal</_ExplorerContextMenuMessageImportance>
+			<_ExplorerContextMenuMessageImportance Condition="'$(_ExplorerContextMenuExecCommand)' == 'True'">high</_ExplorerContextMenuMessageImportance>
+		</PropertyGroup>
 
-        <Message Text="ExplorerContextMenuInputFile = $(ExplorerContextMenuInputFile)" Importance="high" />
-        <Message Text="ExplorerContextMenuJsonFilePath = $(_ExplorerContextMenuJsonFilePath)" Importance="high" />
-        <Message Text="ExplorerContextMenuIntermediateFilePath = $(_ExplorerContextMenuIntermediateFilePath)" Importance="high" />
-        <Message Text="ExplorerContextMenuCommand = $(ExplorerContextMenuResHelper) $(_ExplorerContextMenuParam)" Condition="'$(_ExplorerContextMenuExecCommand)' == 'True'" Importance="high" />
+		<Message Text="ExplorerContextMenuInputFile = $(ExplorerContextMenuInputFile)" Importance="high" />
+		<Message Text="ExplorerContextMenuJsonFilePath = $(_ExplorerContextMenuJsonFilePath)" Importance="high" />
+		<Message Text="ExplorerContextMenuIntermediateFilePath = $(_ExplorerContextMenuIntermediateFilePath)" Importance="high" />
+		<Message Text="ExplorerContextMenuCommand = $(ExplorerContextMenuResHelper) $(_ExplorerContextMenuParam)" Condition="'$(_ExplorerContextMenuExecCommand)' == 'True'" Importance="high" />
 
-        <Exec Command="$(ExplorerContextMenuResHelper) $(_ExplorerContextMenuParam)"
+		<Exec Command="$(ExplorerContextMenuResHelper) $(_ExplorerContextMenuParam)"
               IgnoreStandardErrorWarningFormat="true"
-              Condition="'$(_ExplorerContextMenuExecCommand)' == 'True'">
-            <Output PropertyName="_ExplorerContextMenuResHelperExitCode" TaskParameter="ExitCode"/>
-        </Exec>
+			  ConsoleToMsBuild="true"
+			  IgnoreExitCode="true"
+			  Condition="'$(_ExplorerContextMenuExecCommand)' == 'True'">
+			<Output PropertyName="_ExplorerContextMenuResHelperExitCode" TaskParameter="ExitCode"/>
+			<Output PropertyName="_ExplorerContextMenuResHelperConsoleOutput" TaskParameter="ConsoleOutput"/>
+		</Exec>
 
-        <ItemGroup Condition="'$(_ExplorerContextMenuResHelperExitCode)' == '0'">
-            <None Include="$(_ExplorerContextMenuIntermediateFilePath)" Link="$(ExplorerContextMenuOutputFileName)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-        </ItemGroup>
-    </Target>
+		<Error Text="ErrorCode: $(_ExplorerContextMenuResHelperExitCode), Message: $(_ExplorerContextMenuResHelperConsoleOutput)" Condition="'$(_ExplorerContextMenuResHelperExitCode)' != '0'" />
+		
+		<ItemGroup Condition="'$(_ExplorerContextMenuResHelperExitCode)' == '0'">
+			<None Include="$(_ExplorerContextMenuIntermediateFilePath)" Link="$(ExplorerContextMenuOutputFileName)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+		</ItemGroup>
+	</Target>
 
 </Project>

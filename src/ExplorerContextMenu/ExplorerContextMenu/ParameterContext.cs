@@ -13,18 +13,21 @@ internal partial class ParameterContext
     private readonly ExplorerContextMenuItemModel? model;
     private readonly ShellItemArray? shellItems;
     private readonly Func<ShellFolder?>? folderGetter;
+    private readonly bool uriEncoded;
     private IReadOnlyList<ShellItem>? _shellItems = null;
 
-    public ParameterContext() : this(null, null, null) { }
+    public ParameterContext(bool uriEncoded = false) : this(null, null, null, uriEncoded) { }
 
     public ParameterContext(
         ExplorerContextMenuItemModel? model,
         ShellItemArray? shellItems,
-        Func<ShellFolder?>? folderGetter)
+        Func<ShellFolder?>? folderGetter,
+        bool uriEncoded)
     {
         this.model = model;
         this.shellItems = shellItems;
         this.folderGetter = folderGetter;
+        this.uriEncoded = uriEncoded;
         this.Index = 0;
     }
 
@@ -50,18 +53,18 @@ internal partial class ParameterContext
             var variable = match.Groups[1].Value;
             if (string.Equals(variable, "dllPath", StringComparison.OrdinalIgnoreCase))
             {
-                return DllModule.Location;
+                return TryEncode(DllModule.Location, uriEncoded);
             }
             else if (string.Equals(variable, "dllFolder", StringComparison.OrdinalIgnoreCase))
             {
-                return DllModule.BaseDirectory;
+                return TryEncode(DllModule.BaseDirectory, uriEncoded);
             }
             else if (string.Equals(variable, "packageFolder", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(variable, "appFolder", StringComparison.OrdinalIgnoreCase))
             {
                 if (PackageProperties.Current != null)
                 {
-                    return PackageProperties.Current.PackageInstallLocation;
+                    return TryEncode(PackageProperties.Current.PackageInstallLocation, uriEncoded);
                 }
             }
             else if (string.Equals(variable, "pfn", StringComparison.OrdinalIgnoreCase)
@@ -69,7 +72,7 @@ internal partial class ParameterContext
             {
                 if (PackageProperties.Current != null)
                 {
-                    return PackageProperties.Current.PackageFamilyName;
+                    return TryEncode(PackageProperties.Current.PackageFamilyName, uriEncoded);
                 }
             }
             else if (string.Equals(variable, "currentFolder", StringComparison.OrdinalIgnoreCase)
@@ -101,7 +104,7 @@ internal partial class ParameterContext
                         }
                     }
                     catch { }
-                    if (!string.IsNullOrEmpty(folderPath)) return folderPath;
+                    if (!string.IsNullOrEmpty(folderPath)) return TryEncode(folderPath, uriEncoded);
                 }
             }
             else if (string.Equals(variable, "item", StringComparison.OrdinalIgnoreCase))
@@ -115,7 +118,7 @@ internal partial class ParameterContext
                         && Index < shellItems?.Count)
                     {
 
-                        return shellItems[Index].FullPath;
+                        return TryEncode(shellItems[Index].FullPath, uriEncoded);
                     }
                 }
             }
@@ -147,7 +150,7 @@ internal partial class ParameterContext
                                             }
                                         }
                                         sb.Append('"')
-                                            .Append(shellItems[i].FullPath)
+                                            .Append(TryEncode(shellItems[i].FullPath, uriEncoded))
                                             .Append('"');
                                     }
 
@@ -169,7 +172,7 @@ internal partial class ParameterContext
                                     {
                                         sb.Append(model.ExecuteOptions.ItemPathDelimiter);
                                     }
-                                    sb.Append(shellItems[i].FullPath);
+                                    sb.Append(TryEncode(shellItems[i].FullPath, uriEncoded));
                                 }
 
                                 sb.Append('"');
@@ -196,7 +199,7 @@ internal partial class ParameterContext
 
                         var shellItem = shellItems[index];
 
-                        return shellItem.GetDisplayName(ShellItem.SIGDN.SIGDN_NORMALDISPLAY);
+                        return TryEncode(shellItem.GetDisplayName(ShellItem.SIGDN.SIGDN_NORMALDISPLAY), uriEncoded);
                     }
                 }
             }
@@ -212,6 +215,13 @@ internal partial class ParameterContext
         }
 
         return false;
+
+        static string TryEncode(string _text, bool encode)
+        {
+            if (!encode) return _text;
+            if (string.IsNullOrEmpty(_text)) return _text;
+            return Uri.EscapeDataString(_text);
+        }
     }
 
     private IReadOnlyList<ShellItem>? GetShellItems()

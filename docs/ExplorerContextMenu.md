@@ -127,6 +127,9 @@ Json 文件示例
       "executeOptions":{
         "command": "notepad.exe \"{item}\"",
 
+        // 设置为 true 时, command 中的环境变量将被 uri encode
+        "commandIsUri": false,
+
         // 选中多个文件时点击的行为
         // oneByOne - 选中多个文件时, 分别对每个文件执行一次 Command。此选项不会在 {item} 两侧自动拼接引号
         // spaceSeparatedItemsWithPrefix - 选中多个文件时, 将每个文件作为一个参数, 并且拼接前缀。此选项会在每个{items}两侧自动拼接引号。如: --input "c:\file1" --input "c:\file2"
