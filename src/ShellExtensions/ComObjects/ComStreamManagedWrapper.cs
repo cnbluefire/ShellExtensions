@@ -29,11 +29,11 @@ namespace ShellExtensions.ComObjects
             }
         }
 
-        public override bool CanRead => (grfMode & STGM.STGM_READ) != 0;
+        public override bool CanRead => (grfMode & STGM.STGM_READ) == STGM.STGM_READ;
 
         public override bool CanSeek => canSeek;
 
-        public override bool CanWrite => (grfMode & STGM.STGM_WRITE) != 0;
+        public override bool CanWrite => (grfMode & STGM.STGM_WRITE) == STGM.STGM_WRITE;
 
         public override long Length
         {
